@@ -1,4 +1,4 @@
-# APTP 2022 - **{팀명}**
+# APTP 2022 - **{ATP}**
 ###### Asterisk Python Team Project 2022
 구성원: 이경진 | 성다은 | 이이삭 | 최기현 | 김태희
 
