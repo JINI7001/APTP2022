@@ -149,6 +149,86 @@ for binary_alp in bin_list:
 '''
 ###################################bool_to_minterm##############################################
 
+#######################################다은이#############################################
+
+# 인풋 받는거 : [["b'c'",[0,1,8,9]],["b'd'",[0,2,8,10]], ... ] 이런 리스트~
+# 최종 목표 : minimum sop 만드는거~
+# 계획 : essential찾고
+
+def findminsop(list):
+
+    listt = list
+    cover = []
+    essential = []
+    noww = 0
+
+    # 음 커버해야할 숫자? 암튼 그거 리스트 만드는거임
+    for i in list:
+        for j in i[1]:
+            ii = 0
+            for k in cover:
+                if j != k:
+                    ii = ii + 1
+            if ii == 0:
+                cover.append([j, 0])
+
+    # essential 찾기
+    for l in list:
+        for m in list[1]:
+            for k in cover:
+                if j == k:
+                    k[1] = k[1]+1
+
+    ess = []
+    essu = []
+
+    for a in cover:
+        for b in cover[1]:
+            if b == 1:
+                ess.append(list[0])
+                for c in list[1]:
+                    essu.append(c)
+
+    print(ess) # 얘네가 essential항들임
+
+    #essu로 커버되는 항들을 cover에서 지워줄거임
+
+    for d in cover:
+        for e in essu:
+            if d == e:
+                cover.remove(e)
+
+    # 이제 cover에 남은 애들을 커버할 수 있는 항들을 찾아보자
+    last=[] #cover 수 안가지는 애들
+    for f in list:
+        listtt = f[1]
+        for j in listtt:
+            for k in cover:
+                if j == k:
+                    temp = 0
+                    break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#########################################################################################
+
+
 ###################################classification_group#########################################
 '''
 # f를 1의 개수에 따라 group 으로 나누기.
