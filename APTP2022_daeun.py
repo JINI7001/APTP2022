@@ -208,7 +208,7 @@ def findminsop(list):
         if i not in ess:
             lasta.append(i)
 
-
+    ## ess에 essential implicant 들어있음
 
 
 
