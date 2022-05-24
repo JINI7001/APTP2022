@@ -155,58 +155,56 @@ for binary_alp in bin_list:
 # 최종 목표 : minimum sop 만드는거~
 # 계획 : essential찾고
 
+
 def findminsop(list):
 
     listt = list
-    cover = []
     essential = []
     noww = 0
 
-    # 음 커버해야할 숫자? 암튼 그거 리스트 만드는거임
-    for i in list:
-        for j in i[1]:
-            ii = 0
-            for k in cover:
-                if j != k:
-                    ii = ii + 1
-            if ii == 0:
-                cover.append([j, 0])
+    lista = []
+    listb = []
+    cov = []
+    for i in listt:
+        temp = i[1]
+        lista.append(i[0])
+        listb.append(i[1])
+        for k in temp:
+            if k not in cov:
+                cov.append(k)
+
+    fies = [0 * len(cov)]
 
     # essential 찾기
-    for l in list:
-        for m in list[1]:
-            for k in cover:
-                if j == k:
-                    k[1] = k[1]+1
 
-    ess = []
+    for i in listb:
+        for k in i:
+            a = 0
+            while a<len(cov):
+                if k == cov[a]:
+                    fies[a] = fies[a] + 1
+                a = a+1
+
+    a = 0
     essu = []
+    ess = []
+    lasta = []
+    lastb = []
 
-    for a in cover:
-        for b in cover[1]:
-            if b == 1:
-                ess.append(list[0])
-                for c in list[1]:
-                    essu.append(c)
+    while a< len(cov) :
+        if fies[a] == 1:
+            essu.append(cov[a])
+            b = 0
+            while b<len(listb):
+                for k in listb[b]:
+                    if k == cov[a]:
+                        ess.append(lista[b])
+                b = b+1
+        a = a+1
 
-    print(ess) # 얘네가 essential항들임
-
-    #essu로 커버되는 항들을 cover에서 지워줄거임
-
-    for d in cover:
-        for e in essu:
-            if d == e:
-                cover.remove(e)
-
-    # 이제 cover에 남은 애들을 커버할 수 있는 항들을 찾아보자
-    last=[] #cover 수 안가지는 애들
-    for f in list:
-        listtt = f[1]
-        for j in listtt:
-            for k in cover:
-                if j == k:
-                    temp = 0
-                    break
+    for i in lista:
+        if i not in ess:
+            lasta.append(i)
 
 
 
