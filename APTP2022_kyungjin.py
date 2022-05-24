@@ -190,9 +190,10 @@ for i in result:
 ###################################visualization################################################
 import pygame
 import os
+from math import pi
 
 current_path=os.path.dirname(__file__)
-image_path=os.path.join(current_path,"images")
+etc_path=os.path.join(current_path,"etc")
 ##################################################################
 pygame.init() # 초기화 (반드시 필요)
 
@@ -212,7 +213,7 @@ clock = pygame.time.Clock()
 ## 배경화면
 #background=pygame.image.load("C:/Users/이경진/PycharmProjects/APTP2022/background.png")
 #background=pygame.image.load("../APTP2022/background.png")
-background=pygame.image.load(os.path.join(image_path,"background.png"))
+background=pygame.image.load(os.path.join(etc_path,"background.png"))
 background=pygame.transform.scale(background,(700,700))
 
 ## 게임 이미지
@@ -223,7 +224,8 @@ background=pygame.transform.scale(background,(700,700))
 
 ## 폰트
 size_font=25
-game_font=pygame.font.Font(None,size_font)
+
+game_font=pygame.font.Font(os.path.join(etc_path,"YoonGothic740.ttf"),size_font-7)
 
 ## 총 시간
 total_time=100
@@ -252,25 +254,79 @@ while running:
 
     ### 충돌 처리를 위한 rect 정보 업데이트
 
-    ## 화면 그리기
+    ## 화면에 그리기
+    ### 배경화면
     screen.blit(background, (0, 0))
 
+    ### Title
     text1 = game_font.render("Determination of Prime Implicants", True, (28, 0, 0))
     size_text1 = text1.get_rect()
     size_text1.centerx = screen_width / 2
     size_text1.y = screen_height / 15
 
-    text1_rectangle = pygame.image.load(os.path.join(image_path, "text1_rectangle.png"))
+    text1_rectangle = pygame.image.load(os.path.join(etc_path, "text1_rectangle.png"))
     #text1_rectangle = pygame.image.load("C:/Users/이경진/Desktop/text1_rectangle.png")
     text1_rectangle = pygame.transform.scale(text1_rectangle, (3500, 35))
     size_text1_rectangle = text1_rectangle.get_rect()
     size_text1_rectangle.centerx = screen_width / 2
     #size_text1_rectangle.y = screen_height / 10 - 9
-    size_text1_rectangle.centery=size_text1.y+size_font/3
+    size_text1_rectangle.centery=size_text1.y+size_font/2
 
+    ### Column
+    cnt_comparison=3
+    arr = [[['0000', '0001', '0000','0100','0000','0000'], ['0101', '1111'], ['1010', '1111'],['0000', '0001', '0100','1010', '1111']],
+           [['0000', '0001', '0100','1010', '1111'], ['0000','0101', '1111'], ['1010', '1111','1010', '1111']],
+           [['0000', '0001', '0100','1010'], ['0101', '1111'], ['1010']]]
+
+    ### Table
+    flag_group = 0
+    cnt_i=0
+    for i in arr:
+        cnt_i+=1
+
+        text2 = game_font.render(("Column " + str(cnt_i)), True, (28, 0, 0))
+        size_text2 = text2.get_rect()
+        size_text2.x = (screen_width / (len(arr) + 1)) * cnt_i + 40
+        size_text2.centery = size_text1_rectangle.centery + (size_font) * 1.5
+        screen.blit(text2, size_text2)
+
+        cnt_row = 0
+        cnt_j=0;
+        for j in i:
+            if (flag_group<len(arr[0])):
+                ### group 글자 표시
+                flag_group+=1
+                cnt_j += 1
+                text4 = game_font.render("group " + str(cnt_j - 1), True, (28, 0, 0))
+                size_text4 = text4.get_rect()
+                size_text4.x = screen_width / 13 + 20
+                size_text4.centery = size_text2.centery + (size_font) * 1.5 * (cnt_row + (1 + len(j)) / 2)
+                screen.blit(text4, size_text4)
+
+            ### 곡선으로 group 구분
+            pygame.draw.arc(screen,(28,0,0),[((screen_width/(len(arr)+1)*cnt_i)+24),
+                                             (size_text2.y+size_font*1.5*(cnt_row+1)-2),10,
+                                             (size_font*1.5*(len(j)))-12],pi/2,3*pi/2)
+
+            for k in j:
+                cnt_row+=1
+
+                text3 = game_font.render(k, True, (28, 0, 0))
+                size_text3 = text3.get_rect()
+                size_text3.x = (screen_width / (len(arr) + 1)) * cnt_i + 40
+                size_text3.centery = size_text2.centery + (size_font) * 1.5 * (cnt_row)
+                screen.blit(text3, size_text3)
+
+            pygame.draw.line(screen,(28,0,0),(size_text3.x,size_text3.centery+((size_font) * 1.5)/2),
+                              (size_text3.x+50,size_text3.centery+((size_font) * 1.5)/2),1)
+
+
+    ### 화면에 표시
     screen.blit(text1_rectangle, size_text1_rectangle)
     screen.blit(text1,size_text1)
 
+    pygame.draw.line(screen, (28, 0, 0), (screen_width / 13, size_text2.centery + 17),
+                     (screen_width / 13 * 12, size_text2.centery + 17), 1)
 
     ## 타이머
     ### 경과 시간 계산
@@ -296,6 +352,12 @@ while running:
 
 ## pygame 종료
 pygame.quit()
+
+###################################visualization################################################
+
+######################################binary to decimal
+
+
 
 '''
 import pygame
@@ -564,4 +626,3 @@ if (b==1):
     # pygame 종료
     pygame.quit()
 '''
-###################################visualization################################################
