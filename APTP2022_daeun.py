@@ -149,6 +149,86 @@ for binary_alp in bin_list:
 '''
 ###################################bool_to_minterm##############################################
 
+#######################################다은이#############################################
+
+# 인풋 받는거 : [["b'c'",[0,1,8,9]],["b'd'",[0,2,8,10]], ... ] 이런 리스트~
+# 최종 목표 : minimum sop 만드는거~
+# 계획 : essential찾고
+
+
+def findminsop(list):
+
+    listt = list
+    essential = []
+    noww = 0
+
+    lista = []
+    listb = []
+    cov = []
+    for i in listt:
+        temp = i[1]
+        lista.append(i[0])
+        listb.append(i[1])
+        for k in temp:
+            if k not in cov:
+                cov.append(k)
+
+    fies = [0 * len(cov)]
+
+    # essential 찾기
+
+    for i in listb:
+        for k in i:
+            a = 0
+            while a<len(cov):
+                if k == cov[a]:
+                    fies[a] = fies[a] + 1
+                a = a+1
+
+    a = 0
+    essu = []
+    ess = []
+    lasta = []
+    lastb = []
+
+    while a< len(cov) :
+        if fies[a] == 1:
+            esss = cov[a]
+            essu.append(esss)
+            del(cov[a])
+            b = 0
+            while b<len(listb):
+                for k in listb[b]:
+                    if k == esss:
+                        ess.append(lista[b])
+                b = b+1
+        a = a+1
+
+    for i in lista:
+        if i not in ess:
+            lasta.append(i)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#########################################################################################
+
+
 ###################################classification_group#########################################
 '''
 # f를 1의 개수에 따라 group 으로 나누기.
