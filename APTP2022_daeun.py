@@ -193,11 +193,13 @@ def findminsop(list):
 
     while a< len(cov) :
         if fies[a] == 1:
-            essu.append(cov[a])
+            esss = cov[a]
+            essu.append(esss)
+            del(cov[a])
             b = 0
             while b<len(listb):
                 for k in listb[b]:
-                    if k == cov[a]:
+                    if k == esss:
                         ess.append(lista[b])
                 b = b+1
         a = a+1
