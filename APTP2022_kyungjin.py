@@ -186,7 +186,7 @@ def classification_group(a, lst) :          ### a: 2진수의 자리수(ex: 0000
     k=0
     finallist = [ [] for k in range(a+1)]     ### 비어있는 list 생성
     for i in lst:
-        append_list=[i,minterm_to_binary(a,i)]
+        append_list=[[i],minterm_to_binary(a,i)]
         finallist[numsort(i)].append(append_list)
     return finallist
 ###################################classification_group#########################################
@@ -357,12 +357,45 @@ def visualization_implicants(arr):
     ## pygame 종료
     pygame.quit()
 
-list1=classification_group(4,[0,1,2,3,4,5,6,12,13,14,15])
-arr1=[]
-arr1.append(list1)
-arr1.append(list1)
-arr1.append(list1)
-
-visualization_implicants((arr1))
-
 ###################################visualization################################################
+
+################################comparing_implicant##########################################
+def comparing_implicant(list1):         ### list1: column1
+    compared_list=[]
+    for i in range(len(list1)-1):
+        compared_list.append([])
+        for j in list1[i]:
+            number_of_bit_difference=0
+            for k in list1[i+1]:
+                for l in range(len(j)):
+                    append_string = j[1]
+                    if(j[1][l]!=k[1][l]):
+                        number_of_bit_difference+=1
+                        append_string=append_string[:l]+'-'+append_string[l+1:]
+            if(number_of_bit_difference==1):
+                append_minterm = []
+                for m in j[0]:
+                    append_minterm.append(m)
+                for m in k[0]:
+                    append_minterm.append(m)
+                append_list=[append_minterm,append_string]
+                compared_list[i].append(append_list)
+    print(compared_list)
+
+
+################################comparing_implicant##########################################
+def main():
+    list1 = classification_group(4, [0, 1, 2,8,5,6,9,10,7,14])
+    '''
+    arr1 = []
+    arr1.append(list1)
+    arr1.append(list1)
+    arr1.append(list1)
+
+    arr2=[list1]
+    print(arr2)
+    visualization_implicants((arr1))
+    '''
+    comparing_implicant(list1)
+
+main()
