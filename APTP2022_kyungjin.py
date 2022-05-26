@@ -203,7 +203,7 @@ def visualization_implicants(arr):
     pygame.init()  # 초기화 (반드시 필요)
 
     # 화면 크기 설정
-    screen_width = 700  # 가로 크기
+    screen_width = 225*(len(arr)+1)  # 가로 크기
     screen_height = 700  # 세로 크기
     screen = pygame.display.set_mode((screen_width, screen_height));
 
@@ -219,7 +219,7 @@ def visualization_implicants(arr):
     # background=pygame.image.load("C:/Users/이경진/PycharmProjects/APTP2022/background.png")
     # background=pygame.image.load("../APTP2022/background.png")
     background = pygame.image.load(os.path.join(etc_path, "background.png"))
-    background = pygame.transform.scale(background, (700, 700))
+    background = pygame.transform.scale(background, (screen_width, screen_height))
 
     ## 게임 이미지
 
@@ -282,6 +282,7 @@ def visualization_implicants(arr):
 
         ### Table
         flag_group = 0
+        flag_group_draw=0
         cnt_i = 0
         for i in arr:
             cnt_i += 1
@@ -329,8 +330,8 @@ def visualization_implicants(arr):
         screen.blit(text1_rectangle, size_text1_rectangle)
         screen.blit(text1, size_text1)
 
-        pygame.draw.line(screen, (28, 0, 0), (screen_width / 13, size_text2.centery + 17),
-                         (screen_width / 13 * 12, size_text2.centery + 17), 1)
+        pygame.draw.line(screen, (28, 0, 0), (screen_width / 14, size_text2.centery + 17),
+                         (screen_width / 14 * 13.5, size_text2.centery + 17), 1)
 
         ## 타이머
         ### 경과 시간 계산
@@ -361,41 +362,59 @@ def visualization_implicants(arr):
 
 ################################comparing_implicant##########################################
 def comparing_implicant(list1):         ### list1: column1
+    cnt_list1_element=0
+    for i in list1:
+        if len(i)!=0:
+            cnt_list1_element+=1
+
     compared_list=[]
-    for i in range(len(list1)-1):
+    checked_list=list1.copy()
+    for i in range(cnt_list1_element-1):
         compared_list.append([])
-        for j in list1[i]:
-            number_of_bit_difference=0
+        for j in list1[i]:              ### list1[i] : group #   // j,k : element of group
             for k in list1[i+1]:
-                for l in range(len(j)):
-                    append_string = j[1]
+                number_of_bit_difference = 0
+                append_string = k[1]
+                for l in range(len(j[1])):
                     if(j[1][l]!=k[1][l]):
                         number_of_bit_difference+=1
                         append_string=append_string[:l]+'-'+append_string[l+1:]
-            if(number_of_bit_difference==1):
-                append_minterm = []
-                for m in j[0]:
-                    append_minterm.append(m)
-                for m in k[0]:
-                    append_minterm.append(m)
-                append_list=[append_minterm,append_string]
-                compared_list[i].append(append_list)
-    print(compared_list)
+                if(number_of_bit_difference==1):
+                    append_minterm = []
+                    for m in j[0]:
+                        append_minterm.append(m)
+                    for m in k[0]:
+                        append_minterm.append(m)
+                    append_minterm.sort()
+                    append_list=[append_minterm,append_string]
+                    compared_list[i].append(append_list)
+
+    ## 중복항 제거
+    deduplicated_list = []
+    for i in compared_list:  ## k : group
+        sub_list = []
+        for j in i:
+            if j not in sub_list:
+                sub_list.append((j))
+        deduplicated_list.append(sub_list)
+
+    if len(deduplicated_list[len(deduplicated_list)-1])==0:
+        deduplicated_list.pop()
+    return deduplicated_list
 
 
 ################################comparing_implicant##########################################
 def main():
-    list1 = classification_group(4, [0, 1, 2,8,5,6,9,10,7,14])
-    '''
+    list1 = classification_group(4, [0,1,2,8,5,6,9,10,7,14])
+    list1_copy=list1.copy()
     arr1 = []
-    arr1.append(list1)
-    arr1.append(list1)
-    arr1.append(list1)
 
-    arr2=[list1]
-    print(arr2)
+    while len(list1_copy) !=0:
+        arr1.append(list1_copy)
+        list1_copy=comparing_implicant(list1_copy)
+
+    for i in arr1:
+        print(i)
     visualization_implicants((arr1))
-    '''
-    comparing_implicant(list1)
 
 main()
