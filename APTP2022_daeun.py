@@ -154,7 +154,7 @@ for binary_alp in bin_list:
 # 인풋 받는거 : [["b'c'",[0,1,8,9]],["b'd'",[0,2,8,10]], ... ] 이런 리스트~
 # 최종 목표 : minimum sop 만드는거~
 # 계획 : essential찾고
-inputlist = [[[1,5],"a'c'd"],[[5,7],"a'c'd"],[[6,7],"a'c'd"],[[0,1,8,9],"b'c'"],[[0,2,8,10],"b'd'"],[[2,6,10,14],"cd'"]]
+inputlist = [[[1,5],"a'c'd"],[[5,7],"a'cd"],[[6,7],"a'bc"],[[0,1,8,9],"b'c'"],[[0,2,8,10],"b'd'"],[[2,6,10,14],"cd'"]]
 
 def findminsop(list):
 
@@ -254,16 +254,27 @@ def findminsop(list):
             lista.remove(lista[b])
             listb.remove(listb[b])
         b = b+1
-
-
-#####################petric method#####################
-
-    print(noessu) # 이제 cover해야하는 숫자
-    print(listb)  # 남은 implicant in 문자
-    print(lista)  # 남은 implicant in 숫자
+    print(noessu)  # 이제 cover해야하는 숫자
+    print(listb)  # essential로 커버되지 않은 implicant in 문자
+    print(lista)  # essential로 커버되지 않은  implicant in 숫자
     print("==============")
 
+    boxx = []
+    for i in noessu:
+        boxx.append(i)
 
+    last = []
+    b = 0
+
+    while len(boxx) != 0:
+        for i in lista[b]:
+            if i in boxx:
+                last.append(listb[b])
+                boxx.remove(i)
+        b = b+1
+
+    print( "essential아닌 prime =", last)
+    print( "mim sop = ", essentialimplicant+last)
 
 
 
