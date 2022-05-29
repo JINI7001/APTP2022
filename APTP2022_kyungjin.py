@@ -1,10 +1,10 @@
 # change test
 
 
-###################################minterm_to_bool##############################################
-'''
-n = 3
-min=range(0,2**3)
+###################################minterm_to_implicant##############################################
+
+n = 4
+min=range(0,2**4)
 # n은 알파벳의 수 (?)
 # min은 list의 형태로 표현
 
@@ -49,10 +49,6 @@ def num_to_binary(n, num):
     #join함수를 이용해서, 다시 string으로 바꿔준다.
 
     return str_binary
-
-
-
-
 
 def function1(n, lst):
     # function1
@@ -112,18 +108,52 @@ def function1(n, lst):
 
     return lst1
 
-list1=function1(n,min)
-count=0
-for i in list1:
-    print(i,end="  ")
-    count=count+1
-    if (count%5==0):
-        print("\n")
-print("\n")
-#제대로 function1이 작동했는지 시험하기 위한, print구문
+def main1():
+    list1=function1(n,min)
+    count=0
+    for i in list1:
+        print(i,end="  ")
+        count=count+1
+        if (count%5==0):
+            print("\n")
+    print("\n")
+main1()
+
+###################################minterm_to_implicant##############################################
+
+##################################implicant_to_bool#############################
+'''
+n=4
+implicant="b'c"
+print(implicant[:0])
+def implicant_to_bool(n,implicant):
+    list_small_letter = []
+    list_capital_letter = []
+    for i in range(n):
+        list_small_letter.append(chr(65 + i + 32))
+        list_capital_letter.append(chr((65 + i)))
+
+def complement_to_large(implicant):
+    list_implicant=list(implicant)
+    converted_implicant=""
+    previous=0
+    present=1
+    if (len(implicant)==1):
+        return implicant
+    else:
+        while present<len(implicant):
+            if implicant[present]=="'":
+                list_implicant[previous]=chr(int(chr(list_implicant[previous]))-32)
+            previous+=1
+            present+=1
+        for i in list_implicant:
+            if i!="'":
+                converted_implicant=converted_implicant+str(i)
+print(complement_to_large("b'c"))
 
 '''
-###################################minterm_to_bool##############################################
+##################################implicant_to_bool#############################
+
 
 
 
@@ -152,6 +182,8 @@ def binary_to_num(n, binary):
 for binary_alp in bin_list:
     bin_list = binary_to_num(n, binary_alp)
 '''
+def bool_to_minterm():
+    pass
 ###################################bool_to_minterm##############################################
 
 ###################################classification_group#########################################
@@ -196,7 +228,7 @@ import pygame
 import os
 from math import pi
 
-def visualization_implicants(arr):
+def visualization_implicants(arr,residue_list):
     current_path = os.path.dirname(__file__)
     etc_path = os.path.join(current_path, "etc")
     ##################################################################
@@ -270,11 +302,9 @@ def visualization_implicants(arr):
         size_text1.y = screen_height / 15
 
         text1_rectangle = pygame.image.load(os.path.join(etc_path, "text1_rectangle.png"))
-        # text1_rectangle = pygame.image.load("C:/Users/이경진/Desktop/text1_rectangle.png")
         text1_rectangle = pygame.transform.scale(text1_rectangle, (3500, 35))
         size_text1_rectangle = text1_rectangle.get_rect()
         size_text1_rectangle.centerx = screen_width / 2
-        # size_text1_rectangle.y = screen_height / 10 - 9
         size_text1_rectangle.centery = size_text1.y + size_font / 2
 
         ### Column
@@ -284,7 +314,7 @@ def visualization_implicants(arr):
         flag_group = 0
         flag_group_draw=0
         cnt_i = 0
-        for i in arr:
+        for i in arr:               ## i : column
             cnt_i += 1
 
             ### column 표시
@@ -295,9 +325,14 @@ def visualization_implicants(arr):
             screen.blit(text2, size_text2)
 
             cnt_row = 0
-            cnt_j = 0;
-            for j in i:
-                if (flag_group < len(arr[0])):
+            cnt_j = 0
+
+            cnt_group=0
+            for l in arr[0]:
+                if (len(l)!=0):
+                    cnt_group+=1
+            for j in i:                         ## i : column , j : group
+                if (flag_group < cnt_group):
                     ### group 글자 표시
                     flag_group += 1
                     cnt_j += 1
@@ -312,7 +347,7 @@ def visualization_implicants(arr):
                                                      (size_text2.y + size_font * 1.5 * (cnt_row + 1) - 2), 10,
                                                      (size_font * 1.5 * (len(j))) - 12], pi / 2, 3 * pi / 2)
 
-                for k in j:
+                for k in j:                     ## j : group,  k : element of group
                     cnt_row += 1
 
                     ### implicant 표시
@@ -322,6 +357,20 @@ def visualization_implicants(arr):
                     size_text3.x = (screen_width / (len(arr) + 1)) * cnt_i + 40
                     size_text3.centery = size_text2.centery + (size_font) * 1.5 * (cnt_row)
                     screen.blit(text3, size_text3)
+
+                    ### implicant check 표시
+                    flag_check=0
+                    for implicant_check in residue_list:
+                        if implicant_check[0]==k[0]:
+                            flag_check=1
+                    if flag_check!=1:
+                        check_image=pygame.image.load(os.path.join(etc_path,"check.png"))
+                        check_image=pygame.transform.scale(check_image,(23,23))
+                        size_check_image=check_image.get_rect()
+                        size_check_image.x=size_text3.x+size_text3.width+10
+                        size_check_image.y=size_text3.y
+                        screen.blit(check_image,size_check_image)
+
                 ### group 구분선 표시
                 pygame.draw.line(screen, (28, 0, 0), (size_text3.x-7, size_text3.centery + ((size_font) * 1.5) / 2),
                                  (size_text3.x + size_text3.width+5, size_text3.centery + ((size_font) * 1.5) / 2), 1)
@@ -362,32 +411,58 @@ def visualization_implicants(arr):
 
 ################################comparing_implicant##########################################
 def comparing_implicant(list1):         ### list1: column1
-    cnt_list1_element=0
+    cnt_list1_group=0
     for i in list1:
         if len(i)!=0:
-            cnt_list1_element+=1
+            cnt_list1_group+=1
 
     compared_list=[]
     checked_list=list1.copy()
-    for i in range(cnt_list1_element-1):
-        compared_list.append([])
-        for j in list1[i]:              ### list1[i] : group #   // j,k : element of group
-            for k in list1[i+1]:
-                number_of_bit_difference = 0
-                append_string = k[1]
-                for l in range(len(j[1])):
-                    if(j[1][l]!=k[1][l]):
-                        number_of_bit_difference+=1
-                        append_string=append_string[:l]+'-'+append_string[l+1:]
-                if(number_of_bit_difference==1):
-                    append_minterm = []
-                    for m in j[0]:
-                        append_minterm.append(m)
-                    for m in k[0]:
-                        append_minterm.append(m)
-                    append_minterm.sort()
-                    append_list=[append_minterm,append_string]
-                    compared_list[i].append(append_list)
+    residue_list=[]
+    for i in range(cnt_list1_group):
+        if i != cnt_list1_group-1:
+            compared_list.append([])
+            for j in list1[i]:              ### list1[i] : group #   // j,k : element of group
+                flag=0
+                for k in list1[i+1]:
+                    number_of_bit_difference = 0
+                    append_string = k[1]
+                    for l in range(len(j[1])):
+                        if(j[1][l]!=k[1][l]):
+                            number_of_bit_difference+=1
+                            append_string=append_string[:l]+'-'+append_string[l+1:]
+                    if(number_of_bit_difference==1):
+                        flag=1
+                        append_minterm = []
+                        for m in j[0]:
+                            append_minterm.append(m)
+                        for m in k[0]:
+                            append_minterm.append(m)
+                        append_minterm.sort()
+                        append_list=[append_minterm,append_string]
+                        compared_list[i].append(append_list)
+                if i!=0:
+                    for n in list1[i-1]:
+                        number_of_bit_difference = 0
+                        for l in range(len(j[1])):
+                            if (j[1][l] != n[1][l]):
+                                number_of_bit_difference += 1
+                        if (number_of_bit_difference == 1):
+                            flag = 1
+                if(flag==0):
+                    residue_list.append(j)
+        else:
+            for j in list1[i]:              ### list1[i] : group #   // j,k : element of group
+                flag=0
+                for k in list1[i-1]:
+                    number_of_bit_difference = 0
+                    for l in range(len(j[1])):
+                        if(j[1][l]!=k[1][l]):
+                            number_of_bit_difference+=1
+                    if(number_of_bit_difference==1):
+                        flag=1
+                if(flag==0):
+                    residue_list.append(j)
 
     ## 중복항 제거
     deduplicated_list = []
@@ -400,21 +475,25 @@ def comparing_implicant(list1):         ### list1: column1
 
     if len(deduplicated_list[len(deduplicated_list)-1])==0:
         deduplicated_list.pop()
-    return deduplicated_list
+    #print('residue list : ',residue_list,'\n')
+    return deduplicated_list,residue_list
 
 
 ################################comparing_implicant##########################################
 def main():
     list1 = classification_group(4, [0,1,2,8,5,6,9,10,7,14])
     list1_copy=list1.copy()
-    arr1 = []
+    implicants = []
+    residue_list=[]
 
     while len(list1_copy) !=0:
-        arr1.append(list1_copy)
-        list1_copy=comparing_implicant(list1_copy)
+        implicants.append(list1_copy)
+        list1_copy,append_residue_list=comparing_implicant(list1_copy)
+        if(len(append_residue_list)!=0):
+            for i in append_residue_list:
+                residue_list.append(i)
+    print(residue_list)
+    visualization_implicants(implicants,residue_list)
 
-    for i in arr1:
-        print(i)
-    visualization_implicants((arr1))
 
 main()
