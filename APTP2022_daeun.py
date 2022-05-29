@@ -154,66 +154,120 @@ for binary_alp in bin_list:
 # 인풋 받는거 : [["b'c'",[0,1,8,9]],["b'd'",[0,2,8,10]], ... ] 이런 리스트~
 # 최종 목표 : minimum sop 만드는거~
 # 계획 : essential찾고
-
+inputlist = [[[1,5],"a'c'd"],[[5,7],"a'c'd"],[[6,7],"a'c'd"],[[0,1,8,9],"b'c'"],[[0,2,8,10],"b'd'"],[[2,6,10,14],"cd'"]]
 
 def findminsop(list):
 
     listt = list
-    essential = []
-    noww = 0
 
     lista = []
     listb = []
     cov = []
     for i in listt:
-        temp = i[1]
+        temp = i[0]
         lista.append(i[0])
         listb.append(i[1])
         for k in temp:
             if k not in cov:
                 cov.append(k)
 
-    fies = [0 * len(cov)]
+    print(lista) #[[1, 5], [5, 7], [6, 7], [0, 1, 8, 9], [0, 2, 8, 10], [2, 6, 10, 14]]
+    print(listb) #["a'c'd", "a'c'd", "a'c'd", "b'c'", "b'd'", "cd'"]
+    print(cov) #[1, 5, 7, 6, 0, 8, 9, 2, 10, 14]
+    nu = 0
+    fies =[]
 
+    while nu<len(cov):
+        fies.append(0)
+        nu = nu+1
+
+    print(fies)  #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     # essential 찾기
 
-    for i in listb:
+    for i in lista:
         for k in i:
             a = 0
             while a<len(cov):
                 if k == cov[a]:
                     fies[a] = fies[a] + 1
                 a = a+1
-
+    print(fies) #[2, 2, 2, 2, 2, 2, 1, 2, 2, 1]
     a = 0
     essu = []
-    ess = []
-    lasta = []
-    lastb = []
+    noessu=[]
 
-    while a< len(cov) :
+    while a< len(fies):
         if fies[a] == 1:
-            esss = cov[a]
-            essu.append(esss)
-            del(cov[a])
-            b = 0
-            while b<len(listb):
-                for k in listb[b]:
-                    if k == esss:
-                        ess.append(lista[b])
-                b = b+1
+            essu.append(cov[a])
+        else:
+            noessu.append(cov[a])
         a = a+1
 
+    essentialimplicant = []
+
+    b = 0
+    while b<len(lista):
+        for i in lista[b]:
+            if i in essu:
+                essentialimplicant.append(listb[b])
+
+        b = b+1
+
+    for i in essentialimplicant:
+        listb.remove(i)
+    # 남은 implicant 항들 in literal
+
+    c = 0
+    already = []
     for i in lista:
-        if i not in ess:
-            lasta.append(i)
+        for k in i:
+            for j in essu:
+                if k == j:
+                    already.append(i)
+                    lista.remove(i)
 
-    ## ess에 essential implicant 들어있음
+    print("essential implicant =", essentialimplicant)
+    print("essential implicant num =", already)
+
+    print(listb)  # 남은 implicant in 문자
+    print(lista)  # 남은 implicant in 숫자
+    print(noessu)  # 남은 커버해야 하는 문자
+    print("==============")
+
+    al = []
+    for i in already:
+        for j in i:
+            al.append(j)
+            if j in noessu:
+                noessu.remove(j)
+
+#####################essential로 cover되는 애들 제거##################
+
+
+    b = 0
+    while b< len(lista):
+        jud = 0
+        for m in lista[b]:
+            if m in al:
+                jud = jud+1
+        if jud == len(lista[b]):
+            lista.remove(lista[b])
+            listb.remove(listb[b])
+        b = b+1
+
+
+#####################petric method#####################
+
+    print(noessu) # 이제 cover해야하는 숫자
+    print(listb)  # 남은 implicant in 문자
+    print(lista)  # 남은 implicant in 숫자
+    print("==============")
 
 
 
 
 
+findminsop(inputlist)
 
 
 
