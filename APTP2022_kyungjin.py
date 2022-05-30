@@ -204,7 +204,7 @@ def bool_to_implicant(bool):
             implicant=implicant+list_small_letter[i]+"'"
         elif  bool[i]=='1':
             implicant=implicant+list_small_letter[i]
-    print(implicant)
+    #print(implicant)
     return implicant
 ###################################bool_to_minterm##############################################
 
@@ -500,6 +500,152 @@ def comparing_implicant(list1):         ### list1: column1
     #print('residue list : ',residue_list,'\n')
     return deduplicated_list,residue_list
 ################################comparing_implicant##########################################
+
+#######################################다은이#############################################
+# 최종 목표 : minimum sop 만드는거~
+# 계획 : essential찾고
+inputlist = [[[1,5],"a'c'd"],[[5,7],"a'cd"],[[6,7],"a'bc"],[[0,1,8,9],"b'c'"],[[0,2,8,10],"b'd'"],[[2,6,10,14],"cd'"]]
+
+def findminsop(list):
+
+    listt = list
+
+    lista = []
+    listb = []
+    cov = []
+    for i in listt:
+        temp = i[0]
+        lista.append(i[0])
+        listb.append(i[1])
+        for k in temp:
+            if k not in cov:
+                cov.append(k)
+
+    #print(lista) #[[1, 5], [5, 7], [6, 7], [0, 1, 8, 9], [0, 2, 8, 10], [2, 6, 10, 14]]
+    #print(listb) #["a'c'd", "a'c'd", "a'c'd", "b'c'", "b'd'", "cd'"]
+    #print(cov) #[1, 5, 7, 6, 0, 8, 9, 2, 10, 14]
+    nu = 0
+    fies =[]
+
+    while nu<len(cov):
+        fies.append(0)
+        nu = nu+1
+
+    #print(fies)  #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    # essential 찾기
+
+    for i in lista:
+        for k in i:
+            a = 0
+            while a<len(cov):
+                if k == cov[a]:
+                    fies[a] = fies[a] + 1
+                a = a+1
+    #print(fies) #[2, 2, 2, 2, 2, 2, 1, 2, 2, 1]
+    a = 0
+    essu = []
+    noessu=[]
+
+    while a< len(fies):
+        if fies[a] == 1:
+            essu.append(cov[a])
+        else:
+            noessu.append(cov[a])
+        a = a+1
+
+    essentialimplicant = []
+
+    b = 0
+    while b<len(lista):
+        for i in lista[b]:
+            if i in essu:
+                essentialimplicant.append(listb[b])
+
+        b = b+1
+
+    for i in essentialimplicant:
+        listb.remove(i)
+    # 남은 implicant 항들 in literal
+
+    c = 0
+    already = []
+    for i in lista:
+        for k in i:
+            for j in essu:
+                if k == j:
+                    already.append(i)
+                    lista.remove(i)
+
+    print("essential implicant =", essentialimplicant)
+    print("essential implicant num =", already)
+
+    #print(listb)  # 남은 implicant in 문자
+    #print(lista)  # 남은 implicant in 숫자
+    #print(noessu)  # 남은 커버해야 하는 문자
+    #print("==============")
+
+    al = []
+    for i in already:
+        for j in i:
+            al.append(j)
+            if j in noessu:
+                noessu.remove(j)
+#####################essential로 cover되는 애들 제거##################
+    b = 0
+    while b< len(lista):
+        jud = 0
+        for m in lista[b]:
+            if m in al:
+                jud = jud+1
+        if jud == len(lista[b]):
+            lista.remove(lista[b])
+            listb.remove(listb[b])
+        b = b+1
+    #print(noessu)  # 이제 cover해야하는 숫자
+    #print(listb)  # essential로 커버되지 않은 implicant in 문자
+    #print(lista)  # essential로 커버되지 않은  implicant in 숫자
+    #print("==============")
+
+
+    last = []
+    b = 0
+
+    ### 야매 패트릭###
+    k = 0
+    while b<len(lista):
+        ovl = 0
+        for i in lista[b]:
+            if i in noessu:
+                ovl = ovl+1
+        if k<ovl:
+            k = ovl
+            box = lista[b]
+            boxx = listb[b]
+            lista.remove(box)
+            listb.remove(boxx)
+            lista.insert(0, box)
+            listb.insert(0, boxx)
+        b = b+1
+
+    boxx = noessu
+    b = 0
+    while len(boxx) != 0:
+        for i in lista[b]:
+            if i in boxx:
+                last.append(listb[b])
+                boxx.remove(i)
+        b = b+1
+
+    llast = []
+    for i in last:
+        if i not in llast:
+            llast.append(i)
+
+    print( "essential아닌 prime =", llast)
+    print( "mim sop = ", essentialimplicant+llast)
+
+#findminsop(inputlist)
+#########################################################################################
 def main():
     list1 = classification_group(4, [0,1,2,8,5,6,9,10,7,14])
     list1_copy=list1.copy()
@@ -512,12 +658,13 @@ def main():
         if(len(append_residue_list)!=0):
             for i in append_residue_list:
                 residue_list.append(i)
-    print(residue_list)
+    #print(residue_list)
     visualization_implicants(implicants,residue_list)
 
     converted_residue_list=[[] for i in residue_list ]
     for i in range(len(residue_list)):
-        converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
         converted_residue_list[i].append(residue_list[i][0])
-    print(converted_residue_list)
+        converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
+    print("\nPrime Implicants : ",converted_residue_list,"\n")
+    findminsop(converted_residue_list)
 main()
