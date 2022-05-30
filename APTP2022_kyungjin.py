@@ -1,12 +1,8 @@
-# change test
-
-
 ###################################minterm_to_implicant##############################################
 
-n = 4
-min=range(0,2**4)
-# n은 알파벳의 수 (?)
-# min은 list의 형태로 표현
+##n은 알파벳의 수 (?)
+##min은 list의 형태로 표현
+
 
 def num_to_binary(n, num):
     # num을 이진수로 표현해주는 함수
@@ -109,6 +105,8 @@ def function1(n, lst):
     return lst1
 
 def main1():
+    n = 4
+    min = range(0, 2 ** 4)
     list1=function1(n,min)
     count=0
     for i in list1:
@@ -117,21 +115,38 @@ def main1():
         if (count%5==0):
             print("\n")
     print("\n")
-main1()
-
 ###################################minterm_to_implicant##############################################
 
 ##################################implicant_to_bool#############################
-'''
-n=4
-implicant="b'c"
-print(implicant[:0])
+## ord ( 문자 > 숫자 )      chr( 숫자 > 문자 )
 def implicant_to_bool(n,implicant):
     list_small_letter = []
     list_capital_letter = []
+    converted_bool=""
+    list_implicant=list(implicant)
+    modified_implicant=""
     for i in range(n):
         list_small_letter.append(chr(65 + i + 32))
         list_capital_letter.append(chr((65 + i)))
+    for i in range(n):
+        if list_capital_letter[i] == list_implicant[i] or list_small_letter[i] == list_implicant[i]:
+            pass
+        else:
+            list_implicant.insert(i,' ')
+    for i in list_implicant:
+        modified_implicant=modified_implicant+i
+    implicant=modified_implicant
+
+    for i in range(n):
+        if list_capital_letter[i]==implicant[i] or list_small_letter[i]==implicant[i]:
+            if list_capital_letter[i]==implicant[i]:
+                converted_bool=converted_bool+'0'
+            if list_small_letter[i]==implicant[i]:
+                converted_bool=converted_bool+'1'
+        else:
+            converted_bool=converted_bool+'-'
+    print(converted_bool)
+    return converted_bool
 
 def complement_to_large(implicant):
     list_implicant=list(implicant)
@@ -143,19 +158,15 @@ def complement_to_large(implicant):
     else:
         while present<len(implicant):
             if implicant[present]=="'":
-                list_implicant[previous]=chr(int(chr(list_implicant[previous]))-32)
+                list_implicant[previous]=chr(ord(list_implicant[previous])-32)
             previous+=1
             present+=1
         for i in list_implicant:
             if i!="'":
-                converted_implicant=converted_implicant+str(i)
-print(complement_to_large("b'c"))
-
-'''
+                converted_implicant=converted_implicant+i
+        print(converted_implicant)
+        return converted_implicant
 ##################################implicant_to_bool#############################
-
-
-
 
 ###################################bool_to_minterm##############################################
 '''
@@ -182,8 +193,19 @@ def binary_to_num(n, binary):
 for binary_alp in bin_list:
     bin_list = binary_to_num(n, binary_alp)
 '''
-def bool_to_minterm():
-    pass
+def bool_to_implicant(bool):
+    implicant=''
+    n=len(bool)
+    list_small_letter = []
+    for i in range(n):
+        list_small_letter.append(chr(65 + i + 32))
+    for i in range(len(bool)):
+        if bool[i]=='0':
+            implicant=implicant+list_small_letter[i]+"'"
+        elif  bool[i]=='1':
+            implicant=implicant+list_small_letter[i]
+    print(implicant)
+    return implicant
 ###################################bool_to_minterm##############################################
 
 ###################################classification_group#########################################
@@ -477,8 +499,6 @@ def comparing_implicant(list1):         ### list1: column1
         deduplicated_list.pop()
     #print('residue list : ',residue_list,'\n')
     return deduplicated_list,residue_list
-
-
 ################################comparing_implicant##########################################
 def main():
     list1 = classification_group(4, [0,1,2,8,5,6,9,10,7,14])
@@ -495,5 +515,9 @@ def main():
     print(residue_list)
     visualization_implicants(implicants,residue_list)
 
-
+    converted_residue_list=[[] for i in residue_list ]
+    for i in range(len(residue_list)):
+        converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
+        converted_residue_list[i].append(residue_list[i][0])
+    print(converted_residue_list)
 main()
