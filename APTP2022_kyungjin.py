@@ -46,8 +46,8 @@ def num_to_binary(n, num):
 
     return str_binary
 
-def function1(n, lst):
-    # function1
+def minterm_to_implicant(n, lst):
+    # minterm_to_implicant
 
     # input
     #  n : 알파벳의 수
@@ -107,7 +107,7 @@ def function1(n, lst):
 def main1():
     n = 4
     min = range(0, 2 ** 4)
-    list1=function1(n,min)
+    list1=minterm_to_implicant(n,min)
     count=0
     for i in list1:
         print(i,end="  ")
@@ -250,7 +250,7 @@ import pygame
 import os
 from math import pi
 
-def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_implicants):
+def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_implicants,implicant_list):
     current_path = os.path.dirname(__file__)
     etc_path = os.path.join(current_path, "etc")
     ##################################################################
@@ -287,7 +287,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
     game_font = pygame.font.Font(os.path.join(etc_path, "YoonGothic740.ttf"), size_font - 7)
 
     ## 총 시간
-    total_time = 100
+    total_time = 1000
 
     ## 시작 시간
     start_ticks = pygame.time.get_ticks()
@@ -316,6 +316,24 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         ## 화면에 그리기
         ### 배경화면
         screen.blit(background, (0, 0))
+
+        ### input implicant list 표시
+        string_implicants_list=""
+        for i in implicant_list:
+            if implicant_list.index(i) == len(implicant_list) - 1:
+                string_implicants_list=string_implicants_list+i
+            else:
+                string_implicants_list = string_implicants_list + i + " + "
+        string_implicants_list = "Input Implicant list  : "+string_implicants_list
+
+        text_implicant_list = game_font.render(string_implicants_list, True, (28, 0, 0))
+        size_text_implicant_list=text_implicant_list.get_rect()
+        size_text_implicant_list.x=10
+        size_text_implicant_list.y=13
+        screen.blit(text_implicant_list,size_text_implicant_list)
+
+
+
 
         ### Title
         text1 = game_font.render("Determination of Prime Implicants", True, (28, 0, 0))
@@ -440,7 +458,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
 
         pygame.draw.line(screen, (28, 0, 0), (screen_width / 14, size_text2.centery + 17),
                          (screen_width / 14 * 13.5, size_text2.centery + 17), 1)
-
+        '''
         ## 타이머
         ### 경과 시간 계산
         elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
@@ -455,6 +473,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         if total_time - elapsed_time <= 0:
             print("타임 아웃")
             running = False
+        '''
 
         ## 게임화면을 다시 그리기
         pygame.display.update()
@@ -686,7 +705,14 @@ def findminsop(list):
 #findminsop(inputlist)
 #########################################################################################
 def main():
-    list1 = classification_group(4, [0,1,2,8,5,6,9,10,7,14])
+    n=4
+    minterm_list=[0,1,2,8,5,6,9,10,7,14]
+    implicant_list=minterm_to_implicant(n,minterm_list)
+    for i in range(len(implicant_list)):
+        if len(implicant_list[i])==0:
+            implicant_list.remove(implicant_list[i])
+
+    list1 = classification_group(n,minterm_list)
     list1_copy=list1.copy()
     implicants = []
     residue_list=[]
@@ -704,7 +730,7 @@ def main():
         converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
     print("\nPrime Implicants : ",converted_residue_list,"\n")
     essential_prime_implicants,prime_implicants=findminsop(converted_residue_list)
-
-    visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants)
+    print(implicants)
+    visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants,implicant_list)
 
 main()
