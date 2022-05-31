@@ -250,7 +250,7 @@ import pygame
 import os
 from math import pi
 
-def visualization_implicants(arr,residue_list):
+def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_implicants):
     current_path = os.path.dirname(__file__)
     etc_path = os.path.join(current_path, "etc")
     ##################################################################
@@ -396,6 +396,43 @@ def visualization_implicants(arr,residue_list):
                 ### group 구분선 표시
                 pygame.draw.line(screen, (28, 0, 0), (size_text3.x-7, size_text3.centery + ((size_font) * 1.5) / 2),
                                  (size_text3.x + size_text3.width+5, size_text3.centery + ((size_font) * 1.5) / 2), 1)
+
+        ### prime, essenstial prime implicants 표시
+        string_essenstial_prime_implicants=""
+        for i in essential_prime_implicants:
+            if essential_prime_implicants.index(i) == len(essential_prime_implicants) - 1:
+                string_essenstial_prime_implicants=string_essenstial_prime_implicants+i
+            else:
+                string_essenstial_prime_implicants = string_essenstial_prime_implicants + i + " + "
+        string_minimum_sop="minimum sop : "+string_essenstial_prime_implicants
+        string_essenstial_prime_implicants = "Essential Prime Implicants : "+string_essenstial_prime_implicants
+
+        text_essential_prime_implicants = game_font.render(string_essenstial_prime_implicants, True, (28, 0, 0))
+        size_text_essential_prime_implicants=text_essential_prime_implicants.get_rect()
+        size_text_essential_prime_implicants.x=screen_width/14
+        size_text_essential_prime_implicants.y=screen_height/15*13+10
+        screen.blit(text_essential_prime_implicants,size_text_essential_prime_implicants)
+
+        string_prime_implicants=""
+        for i in prime_implicants:
+            if prime_implicants.index(i)==len(prime_implicants)-1:
+                string_prime_implicants = string_prime_implicants + i
+            else:
+                string_prime_implicants = string_prime_implicants + i + " + "
+        string_minimum_sop=string_minimum_sop+" + "+string_prime_implicants
+        string_prime_implicants = "Prime Implicants : "+string_prime_implicants
+
+        text_prime_implicants = game_font.render(string_prime_implicants, True, (28, 0, 0))
+        size_text_prime_implicants = text_prime_implicants.get_rect()
+        size_text_prime_implicants.x = size_text_essential_prime_implicants.x+size_text_essential_prime_implicants.width+20
+        size_text_prime_implicants.y = screen_height / 15 * 13+10
+        screen.blit(text_prime_implicants, size_text_prime_implicants)
+
+        text_minimum_sop = game_font.render(string_minimum_sop, True, (28, 0, 0))
+        size_text_minimum_sop = text_minimum_sop.get_rect()
+        size_text_minimum_sop.x = screen_width / 14
+        size_text_minimum_sop.y = screen_height / 15 * 14
+        screen.blit(text_minimum_sop,size_text_minimum_sop)
 
         ### 화면에 표시
         screen.blit(text1_rectangle, size_text1_rectangle)
@@ -644,6 +681,8 @@ def findminsop(list):
     print( "essential아닌 prime =", llast)
     print( "mim sop = ", essentialimplicant+llast)
 
+    return essentialimplicant, llast
+
 #findminsop(inputlist)
 #########################################################################################
 def main():
@@ -658,13 +697,14 @@ def main():
         if(len(append_residue_list)!=0):
             for i in append_residue_list:
                 residue_list.append(i)
-    #print(residue_list)
-    visualization_implicants(implicants,residue_list)
 
     converted_residue_list=[[] for i in residue_list ]
     for i in range(len(residue_list)):
         converted_residue_list[i].append(residue_list[i][0])
         converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
     print("\nPrime Implicants : ",converted_residue_list,"\n")
-    findminsop(converted_residue_list)
+    essential_prime_implicants,prime_implicants=findminsop(converted_residue_list)
+
+    visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants)
+
 main()
