@@ -232,15 +232,29 @@ import pygame
 import os
 from math import pi
 
-def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_implicants,implicant_list):
+def visualization_implicants(implicants,residue_list,essential_prime_implicants,prime_implicants,implicant_list):
     current_path = os.path.dirname(__file__)
     etc_path = os.path.join(current_path, "etc")
     ##################################################################
     pygame.init()  # 초기화 (반드시 필요)
 
     # 화면 크기 설정
-    screen_width = 225*(len(arr)+1)  # 가로 크기
-    screen_height = 800  # 세로 크기
+    cnt_max_row = 0
+    for i in implicants:
+        max_row = 0
+        for j in i:
+            max_row += len(j)
+        if cnt_max_row < max_row:
+            cnt_max_row = max_row
+
+    size_font=22
+    a = 55
+    b = a + size_font / 2
+    c = b + (size_font) * 1.5
+    d = c + (size_font) * 1.5 * (cnt_max_row+2)+10
+
+    screen_width = 225 * (len(implicants) + 1)  # 가로 크기
+    screen_height = d  # 세로 크기
     screen = pygame.display.set_mode((screen_width, screen_height));
 
     # 화면 타이틀 설정
@@ -265,7 +279,6 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
 
     ## 폰트
     size_font = 22
-
     game_font = pygame.font.Font(os.path.join(etc_path, "YoonGothic740.ttf"), size_font - 7)
 
     ## 총 시간
@@ -311,14 +324,14 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         text_implicant_list = game_font.render(string_implicants_list, True, (28, 0, 0))
         size_text_implicant_list=text_implicant_list.get_rect()
         size_text_implicant_list.x=10
-        size_text_implicant_list.y=13
+        size_text_implicant_list.y=0
         screen.blit(text_implicant_list,size_text_implicant_list)
 
         ### Title
         text1 = game_font.render("Determination of Prime Implicants", True, (28, 0, 0))
         size_text1 = text1.get_rect()
         size_text1.centerx = screen_width / 2
-        size_text1.y = screen_height / 15
+        size_text1.y = (size_font) * 1.5
 
         text1_rectangle = pygame.image.load(os.path.join(etc_path, "text1_rectangle.png"))
         text1_rectangle = pygame.transform.scale(text1_rectangle, (3500, 35))
@@ -333,13 +346,13 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         flag_group = 0
         flag_group_draw=0
         cnt_i = 0
-        for i in arr:               ## i : column
+        for i in implicants:               ## i : column
             cnt_i += 1
 
             ### column 표시
             text2 = game_font.render(("Column " + str(cnt_i)), True, (28, 0, 0))
             size_text2 = text2.get_rect()
-            size_text2.x = (screen_width / (len(arr) + 1)) * cnt_i + 40
+            size_text2.x = (screen_width / (len(implicants) + 1)) * cnt_i + 40
             size_text2.centery = size_text1_rectangle.centery + (size_font) * 1.5
             screen.blit(text2, size_text2)
 
@@ -347,7 +360,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
             cnt_j = 0
 
             cnt_group=0
-            for l in arr[0]:
+            for l in implicants[0]:
                 if (len(l)!=0):
                     cnt_group+=1
             for j in i:                         ## i : column , j : group
@@ -362,7 +375,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
                     screen.blit(text4, size_text4)
 
                 ### 곡선으로 group 구분
-                pygame.draw.arc(screen, (28, 0, 0), [((screen_width / (len(arr) + 1) * cnt_i) + 24),
+                pygame.draw.arc(screen, (28, 0, 0), [((screen_width / (len(implicants) + 1) * cnt_i) + 24),
                                                      (size_text2.y + size_font * 1.5 * (cnt_row + 1) - 2), 10,
                                                      (size_font * 1.5 * (len(j))) - 12], pi / 2, 3 * pi / 2)
 
@@ -373,7 +386,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
                     k_to_string=str(k[0])+"  "+k[1]
                     text3 = game_font.render(k_to_string, True, (28, 0, 0))
                     size_text3 = text3.get_rect()
-                    size_text3.x = (screen_width / (len(arr) + 1)) * cnt_i + 40
+                    size_text3.x = (screen_width / (len(implicants) + 1)) * cnt_i + 40
                     size_text3.centery = size_text2.centery + (size_font) * 1.5 * (cnt_row)
                     screen.blit(text3, size_text3)
 
@@ -407,7 +420,7 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         text_essential_prime_implicants = game_font.render(string_essenstial_prime_implicants, True, (28, 0, 0))
         size_text_essential_prime_implicants=text_essential_prime_implicants.get_rect()
         size_text_essential_prime_implicants.x=screen_width/14
-        size_text_essential_prime_implicants.y=screen_height/15*13+10
+        size_text_essential_prime_implicants.y=d- (size_font) * 1.5*2
         screen.blit(text_essential_prime_implicants,size_text_essential_prime_implicants)
 
         string_prime_implicants=""
@@ -423,13 +436,13 @@ def visualization_implicants(arr,residue_list,essential_prime_implicants,prime_i
         text_prime_implicants = game_font.render(string_prime_implicants, True, (28, 0, 0))
         size_text_prime_implicants = text_prime_implicants.get_rect()
         size_text_prime_implicants.x = size_text_essential_prime_implicants.x+size_text_essential_prime_implicants.width+20
-        size_text_prime_implicants.y = screen_height / 15 * 13+10
+        size_text_prime_implicants.y = d- (size_font) * 1.5*2
         screen.blit(text_prime_implicants, size_text_prime_implicants)
 
         text_minimum_sop = game_font.render(string_minimum_sop, True, (28, 0, 0))
         size_text_minimum_sop = text_minimum_sop.get_rect()
         size_text_minimum_sop.x = screen_width / 14
-        size_text_minimum_sop.y = screen_height / 15 * 14
+        size_text_minimum_sop.y = d- (size_font) * 1.5
         screen.blit(text_minimum_sop,size_text_minimum_sop)
 
         ### 화면에 표시
@@ -703,7 +716,7 @@ def findminsop(list):
 #########################################################################################
 def main():
     n=4
-    minterm_list=[0,1,5,7,10]
+    minterm_list=[0,1,2,8,5,6,9,10,7,14]
     '''
     n=int(input("Implicant의 자리수를 입력하세요 : "))
     minterm_list=[]
@@ -750,7 +763,6 @@ def main():
         i[1]=bool_to_implicant(i[1])
     essential_prime_implicants, prime_implicants = findminsop(converted_residue_list)
     '''
-
     #print(implicants,'\n',residue_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicant_list)
     visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants,implicant_list)
 
