@@ -542,8 +542,8 @@ def comparing_implicant(list1):         ### list1: column1
         if len(deduplicated_list[len(deduplicated_list)-1])==0:
             deduplicated_list.pop()
 
-    print("deduplicated_list : ", deduplicated_list, "\nresidue_list : ",residue_list)
-    print("")
+    #print("deduplicated_list : ", deduplicated_list, "\nresidue_list : ",residue_list)
+    #print("")
     return deduplicated_list,residue_list
 ################################comparing_implicant##########################################
 
@@ -625,7 +625,7 @@ def findminsop(list):
                         lista.remove(i)
 
     print("essential implicant =", essentialimplicant)
-    print("essential implicant num =", already)
+    #print("essential implicant num =", already)
 
     # print(listb)  # 남은 implicant in 문자
     # print(lista)  # 남은 implicant in 숫자
@@ -702,8 +702,8 @@ def findminsop(list):
     #findminsop(inputlist)
 #########################################################################################
 def main():
-    n=5
-    minterm_list=[0,1,4,5,7,10,25]
+    n=4
+    minterm_list=[0,1,5,7,10]
     '''
     n=int(input("Implicant의 자리수를 입력하세요 : "))
     minterm_list=[]
@@ -737,7 +737,7 @@ def main():
 
     #for i in residue_list:
 
-    print("\nresidue_list(main) : ",residue_list)
+    #print("\nresidue_list(main) : ",residue_list)
 
     converted_residue_list=[[] for i in residue_list ]
     for i in range(len(residue_list)):
@@ -751,7 +751,7 @@ def main():
     essential_prime_implicants, prime_implicants = findminsop(converted_residue_list)
     '''
 
-    print(implicants,'\n',residue_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicant_list)
+    #print(implicants,'\n',residue_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicant_list)
     visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants,implicant_list)
 
 main()
