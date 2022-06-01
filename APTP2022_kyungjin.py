@@ -739,7 +739,6 @@ def main():
 
     print("\nresidue_list(main) : ",residue_list)
 
-    '''
     converted_residue_list=[[] for i in residue_list ]
     for i in range(len(residue_list)):
         converted_residue_list[i].append(residue_list[i][0])
@@ -750,7 +749,9 @@ def main():
     for i in converted_residue_list:
         i[1]=bool_to_implicant(i[1])
     essential_prime_implicants, prime_implicants = findminsop(converted_residue_list)
+    '''
 
+    print(implicants,'\n',residue_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicant_list)
     visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants,implicant_list)
 
 main()
