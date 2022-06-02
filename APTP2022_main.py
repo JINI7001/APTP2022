@@ -232,7 +232,7 @@ import pygame
 import os
 from math import pi
 
-def visualization_implicants(implicants,residue_list,essential_prime_implicants,prime_implicants,implicant_list):
+def visualization_implicants(minterm_list,minterm_implicant,unchecked_list,essential_prime_implicants,prime_implicants,implicants):
     current_path = os.path.dirname(__file__)
     etc_path = os.path.join(current_path, "etc")
     ##################################################################
@@ -240,7 +240,7 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
 
     # 화면 크기 설정
     cnt_max_row = 0
-    for i in implicants:
+    for i in minterm_implicant:
         max_row = 0
         for j in i:
             max_row += len(j)
@@ -251,9 +251,9 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
     a = 55
     b = a + size_font / 2
     c = b + (size_font) * 1.5
-    d = c + (size_font) * 1.5 * (cnt_max_row+2)+10
+    d = c + (size_font) * 1.5 * (cnt_max_row+3)+10
 
-    screen_width = 225 * (len(implicants) + 1)  # 가로 크기
+    screen_width = 225 * (len(minterm_implicant) + 1)  # 가로 크기
     screen_height = d  # 세로 크기
     screen = pygame.display.set_mode((screen_width, screen_height));
 
@@ -312,10 +312,25 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
         ### 배경화면
         screen.blit(background, (0, 0))
 
+        ### input minterm list 표시
+        string_minterm_list = ""
+        for i in minterm_list:
+            if minterm_list.index(i) == len(minterm_list) - 1:
+                string_minterm_list = string_minterm_list + str(i)
+            else:
+                string_minterm_list = string_minterm_list + str(i) + ", "
+        string_minterm_list = "Input minterm list  : ∑m(" + string_minterm_list+")"
+
+        text_minterm_list = game_font.render(string_minterm_list, True, (28, 0, 0))
+        size_text_minterm_list = text_minterm_list.get_rect()
+        size_text_minterm_list.x = 10
+        size_text_minterm_list.y = 0
+        screen.blit(text_minterm_list, size_text_minterm_list)
+
         ### input implicant list 표시
         string_implicants_list=""
-        for i in implicant_list:
-            if implicant_list.index(i) == len(implicant_list) - 1:
+        for i in implicants:
+            if implicants.index(i) == len(implicants) - 1:
                 string_implicants_list=string_implicants_list+i
             else:
                 string_implicants_list = string_implicants_list + i + " + "
@@ -324,14 +339,14 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
         text_implicant_list = game_font.render(string_implicants_list, True, (28, 0, 0))
         size_text_implicant_list=text_implicant_list.get_rect()
         size_text_implicant_list.x=10
-        size_text_implicant_list.y=0
+        size_text_implicant_list.y=(size_font) * 1.5 +10
         screen.blit(text_implicant_list,size_text_implicant_list)
 
         ### Title
         text1 = game_font.render("Determination of Prime Implicants", True, (28, 0, 0))
         size_text1 = text1.get_rect()
         size_text1.centerx = screen_width / 2
-        size_text1.y = (size_font) * 1.5
+        size_text1.y = (size_font) * 1.5*2 +10
 
         text1_rectangle = pygame.image.load(os.path.join(etc_path, "text1_rectangle.png"))
         text1_rectangle = pygame.transform.scale(text1_rectangle, (3500, 35))
@@ -346,13 +361,13 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
         flag_group = 0
         flag_group_draw=0
         cnt_i = 0
-        for i in implicants:               ## i : column
+        for i in minterm_implicant:               ## i : column
             cnt_i += 1
 
             ### column 표시
             text2 = game_font.render(("Column " + str(cnt_i)), True, (28, 0, 0))
             size_text2 = text2.get_rect()
-            size_text2.x = (screen_width / (len(implicants) + 1)) * cnt_i + 40
+            size_text2.x = (screen_width / (len(minterm_implicant) + 1)) * cnt_i + 40
             size_text2.centery = size_text1_rectangle.centery + (size_font) * 1.5
             screen.blit(text2, size_text2)
 
@@ -360,7 +375,7 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
             cnt_j = 0
 
             cnt_group=0
-            for l in implicants[0]:
+            for l in minterm_implicant[0]:
                 if (len(l)!=0):
                     cnt_group+=1
             for j in i:                         ## i : column , j : group
@@ -375,7 +390,7 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
                     screen.blit(text4, size_text4)
 
                 ### 곡선으로 group 구분
-                pygame.draw.arc(screen, (28, 0, 0), [((screen_width / (len(implicants) + 1) * cnt_i) + 24),
+                pygame.draw.arc(screen, (28, 0, 0), [((screen_width / (len(minterm_implicant) + 1) * cnt_i) + 24),
                                                      (size_text2.y + size_font * 1.5 * (cnt_row + 1) - 2), 10,
                                                      (size_font * 1.5 * (len(j))) - 12], pi / 2, 3 * pi / 2)
 
@@ -386,13 +401,13 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
                     k_to_string=str(k[0])+"  "+k[1]
                     text3 = game_font.render(k_to_string, True, (28, 0, 0))
                     size_text3 = text3.get_rect()
-                    size_text3.x = (screen_width / (len(implicants) + 1)) * cnt_i + 40
+                    size_text3.x = (screen_width / (len(minterm_implicant) + 1)) * cnt_i + 40
                     size_text3.centery = size_text2.centery + (size_font) * 1.5 * (cnt_row)
                     screen.blit(text3, size_text3)
 
                     ### implicant check 표시
                     flag_check=0
-                    for implicant_check in residue_list:
+                    for implicant_check in unchecked_list:
                         if implicant_check[0]==k[0]:
                             flag_check=1
                     if flag_check!=1:
@@ -407,7 +422,7 @@ def visualization_implicants(implicants,residue_list,essential_prime_implicants,
                 pygame.draw.line(screen, (28, 0, 0), (size_text3.x-7, size_text3.centery + ((size_font) * 1.5) / 2),
                                  (size_text3.x + size_text3.width+5, size_text3.centery + ((size_font) * 1.5) / 2), 1)
 
-        ### prime, essenstial prime implicants 표시
+        ### prime, essenstial prime minterm_implicant 표시
         string_essenstial_prime_implicants=""
         for i in essential_prime_implicants:
             if essential_prime_implicants.index(i) == len(essential_prime_implicants) - 1:
@@ -487,7 +502,7 @@ def comparing_implicant(list1):         ### list1: column1
             cnt_list1_group+=1
 
     compared_list=[]
-    residue_list=[]                             # 체크안된 minterm이 포함된 list
+    unchecked_list=[]                             # 체크안된 minterm이 포함된 list
     deduplicated_list = []
 
     if cnt_list1_group >=2:
@@ -522,7 +537,7 @@ def comparing_implicant(list1):         ### list1: column1
                             if (number_of_bit_difference == 1):
                                 flag = 1
                     if(flag==0):
-                        residue_list.append(j)
+                        unchecked_list.append(j)
             else:
                 for j in list1[i]:              ### list1[i] : group #   // j,k : element of group
                     flag=0
@@ -534,7 +549,7 @@ def comparing_implicant(list1):         ### list1: column1
                         if(number_of_bit_difference==1):
                             flag=1
                     if(flag==0):
-                        residue_list.append(j)
+                        unchecked_list.append(j)
         ## 중복항 제거
         for i in compared_list:  ## k : group
             sub_list = []
@@ -548,16 +563,16 @@ def comparing_implicant(list1):         ### list1: column1
         deduplicated_list=compared_list.copy()
         deduplicated_list_copy=deduplicated_list.copy()
         for i in deduplicated_list_copy:
-            residue_list.append(deduplicated_list.pop())
+            unchecked_list.append(deduplicated_list.pop())
         deduplicated_list.clear()
 
     if len(deduplicated_list) !=0:
         if len(deduplicated_list[len(deduplicated_list)-1])==0:
             deduplicated_list.pop()
 
-    #print("deduplicated_list : ", deduplicated_list, "\nresidue_list : ",residue_list)
+    #print("deduplicated_list : ", deduplicated_list, "\nunchecked_list : ",unchecked_list)
     #print("")
-    return deduplicated_list,residue_list
+    return deduplicated_list,unchecked_list
 ################################comparing_implicant##########################################
 
 ################################find_minimum_sop###########################################
@@ -715,55 +730,48 @@ def findminsop(list):
     #findminsop(inputlist)
 #########################################################################################
 def main():
-    n=4
-    minterm_list=[0,1,2,8,5,6,9,10,7,14]
+    '''
+    n=6
+    minterm_list=[0,1,2,5,8,14,18,20,22,26,30,35,40,45,50,55,60,63]
     '''
     n=int(input("Implicant의 자리수를 입력하세요 : "))
-    minterm_list=[]
-    print("minterm의 숫자들을 0~%d까지 최대 %d개 입력하세요! 입력을 완료하려면 -1을 입력하세요!" %(2**n-1,2**n))
-    for i in range(2**n):
-        print("%d번째 minterm 입력 : "%(i+1))
-        num=int(input())
-        if num<=-1:
-            break
-        else:
-            minterm_list.append(num)
-    '''
+    print("minterm의 숫자들을 0~%d까지 최대 %d개 입력하세요!" %(2**n-1,2**n))
+    minterm_list=[int(x) for x in input().split()]
 
-    implicant_list=minterm_to_implicant(n,minterm_list)
-    for i in range(len(implicant_list)):
-        if len(implicant_list[i])==0:
-            implicant_list.remove(implicant_list[i])
+    implicants=minterm_to_implicant(n,minterm_list)
+    for i in range(len(implicants)):
+        if len(implicants[i])==0:
+            implicants.remove(implicants[i])
 
     list1 = classification_group(n,minterm_list)
     print('\nInput list : ',list1,'\n')
     list1_copy=list1.copy()
-    implicants = []
-    residue_list=[]
+    minterm_implicant = []
+    unchecked_list=[]
 
     while len(list1_copy) !=0:
-        implicants.append(list1_copy)
+        minterm_implicant.append(list1_copy)
         list1_copy, append_residue_list=comparing_implicant(list1_copy)
         if(len(append_residue_list)!=0):
             for i in append_residue_list:
-                residue_list.append(i)
+                unchecked_list.append(i)
 
-    #for i in residue_list:
+    #for i in unchecked_list:
 
-    #print("\nresidue_list(main) : ",residue_list)
+    #print("\nunchecked_list(main) : ",unchecked_list)
 
-    converted_residue_list=[[] for i in residue_list ]
-    for i in range(len(residue_list)):
-        converted_residue_list[i].append(residue_list[i][0])
-        converted_residue_list[i].append(bool_to_implicant(residue_list[i][1]))
+    converted_residue_list=[[] for i in unchecked_list ]
+    for i in range(len(unchecked_list)):
+        converted_residue_list[i].append(unchecked_list[i][0])
+        converted_residue_list[i].append(bool_to_implicant(unchecked_list[i][1]))
     essential_prime_implicants,prime_implicants=findminsop(converted_residue_list)
     '''
-    converted_residue_list=residue_list.copy()
+    converted_residue_list=unchecked_list.copy()
     for i in converted_residue_list:
         i[1]=bool_to_implicant(i[1])
     essential_prime_implicants, prime_implicants = findminsop(converted_residue_list)
     '''
-    #print(implicants,'\n',residue_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicant_list)
-    visualization_implicants(implicants, residue_list,essential_prime_implicants,prime_implicants,implicant_list)
+    #print(minterm_implicant,'\n',unchecked_list,'\n',essential_prime_implicants,'\n',prime_implicants,'\n',implicants)
+    visualization_implicants(minterm_list,minterm_implicant, unchecked_list,essential_prime_implicants,prime_implicants,implicants)
 
 main()
